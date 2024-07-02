@@ -1,0 +1,111 @@
+/*@!Encoding:1250*/
+variables
+{
+  message msg_MyECU_2_Rear M2R;
+  message msg_Rear_2_MyECU R2M;
+  
+  msTimer delayRight; 
+  msTimer delayLeft;
+  
+  int temp;
+}
+
+on envVar env_AFSSwitch
+{
+  if(GetValue(env_AFSSwitch) == 1)
+  {  
+    $sig_AFSSwitch= 1; 
+    Nm_NetworkRequest();
+  }
+  else
+  {
+    $sig_AFSSwitch = 0;   
+  }
+}
+
+on envVar env_HighBeamSwitch
+{
+  if(GetValue(env_HighBeamSwitch) == 1)
+  {  
+    $sig_HighBeamSwitch= 1; 
+    Nm_NetworkRequest();
+  }
+  else
+  {
+    $sig_HighBeamSwitch = 0; 
+  }
+}
+
+on envVar env_CurrentSpeedSlider
+{
+  temp = GetValue(env_CurrentSpeedSlider);
+  $sig_CurrentSpeedSlider = temp;
+  
+  PutValue(env_CurrentSpeedDisplay, temp);
+}
+
+on envVar env_SteeringWheelPosition
+{
+  temp = GetValue(env_SteeringWheelPosition);
+  $sig_SteeringWheelPosition = temp;
+}
+
+on envVar env_AmbientLightBrightness
+{
+  temp = getValue(env_AmbientLightBrightness);
+  $sig_AmbientLightBrightness = temp;
+}
+
+
+
+on message msg_MyECU_2_Rear
+{
+  PutValue(env_LeftHeadlightSteering, this.sig_LeftHAngle);
+  PutValue(env_RightHeadlightSteering, this.sig_RightHAngle);
+  
+  PutValue(env_LeftHeadlightLength, this.sig_LeftLightLength);
+  PutValue(env_RightHeadlightLength, this.sig_RightLightLength);
+}
+
+
+
+on start
+{
+   $sig_SteeringWheelPosition = 0;
+}
+
+ApCanOff ()
+{
+}
+
+ApCanOn ()
+{
+}
+
+on key 'u'
+{
+}
+
+on timer delayRight
+{
+  if (GetValue(env_AFSSwitch)== 0) 
+  {
+    Nm_NetworkRelease();
+    Write("released!");
+  }
+}
+
+on timer delayLeft
+{
+  if (GetValue(env_AFSSwitch)== 0) 
+  {
+    Nm_NetworkRelease();
+    Write("released!");
+  }
+}
+
+on preStart
+{
+   Nm_NetworkRelease();
+}
+
